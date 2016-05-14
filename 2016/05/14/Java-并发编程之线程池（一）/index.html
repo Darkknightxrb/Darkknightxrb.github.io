@@ -74,7 +74,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="并发编程," />
 
 
 
@@ -90,15 +90,19 @@
 
 
 
-<meta name="description" content="爱技术，爱电音，折腾不息">
-<meta property="og:type" content="website">
-<meta property="og:title" content="TDK Rises's Blog">
-<meta property="og:url" content="http://darkknightxrb.github.io/index.html">
+<meta name="description" content="一直久闻java.util.concurrent包和Executor框架大名，为了面试也看过一点相关的内容。最近终于在项目中真正用到了Executor来实现线程池，不过作为初学者，理解还比较浅显，而且本文也不会做一个大而全的讲解，而是从项目入手。如果希望更全面认识的Executor框架推荐去读《Java并发编程的艺术》，相比《Java并发编程实战》更加易懂。
+线程池的作用我们知道在服务器接受客户端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 并发编程之线程池（一）">
+<meta property="og:url" content="http://darkknightxrb.github.io/2016/05/14/Java-并发编程之线程池（一）/index.html">
 <meta property="og:site_name" content="TDK Rises's Blog">
-<meta property="og:description" content="爱技术，爱电音，折腾不息">
+<meta property="og:description" content="一直久闻java.util.concurrent包和Executor框架大名，为了面试也看过一点相关的内容。最近终于在项目中真正用到了Executor来实现线程池，不过作为初学者，理解还比较浅显，而且本文也不会做一个大而全的讲解，而是从项目入手。如果希望更全面认识的Executor框架推荐去读《Java并发编程的艺术》，相比《Java并发编程实战》更加易懂。
+线程池的作用我们知道在服务器接受客户端">
+<meta property="og:updated_time" content="2016-05-14T18:06:21.688Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="TDK Rises's Blog">
-<meta name="twitter:description" content="爱技术，爱电音，折腾不息">
+<meta name="twitter:title" content="Java 并发编程之线程池（一）">
+<meta name="twitter:description" content="一直久闻java.util.concurrent包和Executor框架大名，为了面试也看过一点相关的内容。最近终于在项目中真正用到了Executor来实现线程池，不过作为初学者，理解还比较浅显，而且本文也不会做一个大而全的讲解，而是从项目入手。如果希望更全面认识的Executor框架推荐去读《Java并发编程的艺术》，相比《Java并发编程实战》更加易懂。
+线程池的作用我们知道在服务器接受客户端">
 
 
 
@@ -116,7 +120,7 @@
   };
 </script>
 
-  <title> TDK Rises's Blog </title>
+  <title> Java 并发编程之线程池（一） | TDK Rises's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -147,9 +151,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -246,9 +248,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -268,10 +270,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/05/14/Java-并发编程之线程池（一）/" itemprop="url">
-                  Java 并发编程之线程池（一）
-                </a>
+                Java 并发编程之线程池（一）
               
             
           </h1>
@@ -337,9 +336,7 @@
       
 
       
-        
-          
-            <p>一直久闻java.util.concurrent包和Executor框架大名，为了面试也看过一点相关的内容。最近终于在项目中真正用到了Executor来实现线程池，不过作为初学者，理解还比较浅显，而且本文也不会做一个大而全的讲解，而是从项目入手。如果希望更全面认识的Executor框架推荐去读<a href="http://item.jd.com/11740734.html" target="_blank" rel="external">《Java并发编程的艺术》</a>，相比<a href="http://item.jd.com/10922250.html" target="_blank" rel="external">《Java并发编程实战》</a>更加易懂。</p>
+        <p>一直久闻java.util.concurrent包和Executor框架大名，为了面试也看过一点相关的内容。最近终于在项目中真正用到了Executor来实现线程池，不过作为初学者，理解还比较浅显，而且本文也不会做一个大而全的讲解，而是从项目入手。如果希望更全面认识的Executor框架推荐去读<a href="http://item.jd.com/11740734.html" target="_blank" rel="external">《Java并发编程的艺术》</a>，相比<a href="http://item.jd.com/10922250.html" target="_blank" rel="external">《Java并发编程实战》</a>更加易懂。</p>
 <h3 id="线程池的作用"><a href="#线程池的作用" class="headerlink" title="线程池的作用"></a>线程池的作用</h3><p>我们知道在服务器接受客户端请求时会创建线程来处理请求，但是就会有一个问题：<br>如果并发的线程数量很多，并且每个线程都是执行一个时间很短的任务就结束了，这样频繁创建线程就会大大降低系统的效率，因为频繁创建线程和销毁线程需要时间。<br>利用线程池能够带来三个好处。第一：降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。第二：提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立即执行。第三：提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
 <h3 id="创建线程池"><a href="#创建线程池" class="headerlink" title="创建线程池"></a>创建线程池</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
 <p>好，这便创建了一个线程数固定为100的线程池，如何决定线程池的大小呢？<br>一般需要根据任务的类型来配置线程池大小：<br>  N为CPU核心数，<br>　如果是CPU密集型任务，就需要尽量压榨CPU，参考值可以设为 N+1<br>　如果是IO密集型任务，参考值可以设置为2N<br>当然，这只是一个参考值，具体的设置还需要根据实际情况进行调整，比如可以先将线程池大小设置为参考值，再观察任务运行情况和系统负载、资源利用率来进行适当调整。<br>后面会说到还有newSingleThreadExecutor和newCachedThreadPool方法与newFixedThreadPool的区别。<br>接下来看Executors的newFixedThreadPool方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"> <span class="comment">//ThreadPoolExecutor类</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span><br><span class="line">                              <span class="keyword">int</span> maximumPoolSize,</span><br><span class="line">                              <span class="keyword">long</span> keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), defaultHandler);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
@@ -347,261 +344,58 @@
 <p>从它们的具体实现来看，它们实际上也是调用了ThreadPoolExecutor，只不过参数都已配置好了。<br>newFixedThreadPool创建的线程池corePoolSize和maximumPoolSize值是相等的，它使用的LinkedBlockingQueue；<br>newSingleThreadExecutor将corePoolSize和maximumPoolSize都设置为1，也使用的LinkedBlockingQueue；<br>newCachedThreadPool将corePoolSize设置为0，将maximumPoolSize设置为Integer.MAX_VALUE，使用的SynchronousQueue，也就是说来了任务就创建线程运行，当线程空闲超过60秒，就销毁线程。<br>BlockingQueue即阻塞队列会在下一章讲</p>
 <p><strong>未完待续</strong></p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <footer class="post-footer">
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/14/编写Shell遇到的小坑/" itemprop="url">
-                  编写Shell遇到的小坑
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-14T09:58:37+08:00" content="2016-05-14">
-              2016-05-14
-            </time>
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/14/编写Shell遇到的小坑/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/14/编写Shell遇到的小坑/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
+            <a href="/tags/并发编程/" rel="tag">#并发编程</a>
           
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h3 id="Linux与Windows-“Enter”键的区别"><a href="#Linux与Windows-“Enter”键的区别" class="headerlink" title="Linux与Windows “Enter”键的区别"></a>Linux与Windows “Enter”键的区别</h3><p>使用过Windows的人都知道”Enter”键的含义：换行，然而在Windows操作系统中这实际代表两个操作：回车和换行。<br>回车 \r 本义是光标重新回到本行开头，r的英文为return，控制字符可以写成CR，即Carriage Return<br>换行 \n 本义是光标往下一行（不一定到下一行行首），n的英文为newline，控制字符可以写成LF，即Line Feed<br>按下”Enter”键实际执行了这两个动作。<br>而在Linux系统中按下”Enter”键，也执行同样这两个动作，但是只需要换行 \n 字符即可表现为光标到下一行并回到行首。<br>于是在Windows与Linux的文本文件交互中可以发现两个现象：<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/05/14/编写Shell遇到的小坑/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/14/编写Shell遇到的小坑/" rel="next" title="编写Shell遇到的小坑">
+                <i class="fa fa-chevron-left"></i> 编写Shell遇到的小坑
+              </a>
+            
           </div>
-        
-      
-    </div>
 
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+          <div class="post-nav-prev post-nav-item">
             
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/13/开篇：搭建自己的博客/" itemprop="url">
-                  开篇：搭建自己的博客
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-13T00:14:42+08:00" content="2016-05-13">
-              2016-05-13
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/13/开篇：搭建自己的博客/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/13/开篇：搭建自己的博客/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h3 id="搭建独立博客的目的"><a href="#搭建独立博客的目的" class="headerlink" title="搭建独立博客的目的"></a>搭建独立博客的目的</h3><p>在我刚做码农的时候就想过要写博客，在博客园写(chao)了一篇Eclipse快捷键大全就再没有坚持下去。其实也情有可原，当时的自己真的是啥也不会，而且都不知道自己可以学什么新东西，该学的都是网上一大把例子和教程的东西，也是没有必要自己再写一遍，如果都是些“java集合框架用法”和“struts2用法”之类的博客也有点low。。。<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/05/13/开篇：搭建自己的博客/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -609,6 +403,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/14/Java-并发编程之线程池（一）/"
+           data-title="Java 并发编程之线程池（一）" data-url="http://darkknightxrb.github.io/2016/05/14/Java-并发编程之线程池（一）/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -628,8 +430,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpg"
@@ -744,6 +555,17 @@
       </section>
 
       
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池的作用"><span class="nav-number">1.</span> <span class="nav-text">线程池的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建线程池"><span class="nav-number">2.</span> <span class="nav-text">创建线程池</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
 
     </div>
   </aside>
@@ -846,6 +668,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
