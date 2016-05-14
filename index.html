@@ -338,14 +338,12 @@
 
       
         
-          
-            <h3 id="Linux与Windows-“Enter”键的区别"><a href="#Linux与Windows-“Enter”键的区别" class="headerlink" title="Linux与Windows “Enter”键的区别"></a>Linux与Windows “Enter”键的区别</h3><p>使用过Windows的人都知道”Enter”键的含义：换行，然而在Windows操作系统中这实际代表两个操作：回车和换行。<br>回车 \r 本义是光标重新回到本行开头，r的英文为return，控制字符可以写成CR，即Carriage Return<br>换行 \n 本义是光标往下一行（不一定到下一行行首），n的英文为newline，控制字符可以写成LF，即Line Feed<br>按下”Enter”键实际执行了这两个动作。<br>而在Linux系统中按下”Enter”键，也执行同样这两个动作，但是只需要换行 \n 字符即可表现为光标到下一行并回到行首。<br>于是在Windows与Linux的文本文件交互中可以发现两个现象：</p>
-<p>1.Windows里的文件在Linux下打开的话，在每行的结尾可能会多出一个^M符号。<br>这也是我遇到的坑的由来，在Win下写的shell文件上传至Linux服务器执行会报错，所以熟练使用Vim还是很必要的，因为在远程连接服务器的时候只能用Vim。<br>当然要想在Win下写Shell有一个解决办法，使用Sublime编辑器，在Preferences.sublime-settings中添加如下设置即可将Win的换行符变为Unix格式<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"default_line_ending"</span>: <span class="string">"unix"</span>,</span><br><span class="line"><span class="string">"trim_trailing_white_space_on_save"</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">"ensure_newline_at_eof_on_save"</span>: <span class="literal">true</span>,</span><br></pre></td></tr></table></figure></p>
-<p>2.Linux下的文件在Windows里打开的话，所有文字会变成一行<br>从服务器导出日志文件到Win下即可发现此问题，这时不要怀疑生成的日志文件格式有问题。</p>
-<h3 id="Crontab的环境变量"><a href="#Crontab的环境变量" class="headerlink" title="Crontab的环境变量"></a>Crontab的环境变量</h3><p>在我写的shell中会先生成一个处理过的日志文件，然后调用一个jar去读取日志文件里的内容，遇到的问题是如果我手动执行shell是完全成功执行的，但用Crontab执行时会提醒<code>You have new mail in /var/spool/mail/root</code>，并且只能生成日志文件但数据库中没有插入数据。<br>查看日志后发现了错误原因是不识别”java”命令，即在Crontab中，并没有系统中的环境变量，那么解决办法就是在shell中引入系统中的环境变量，即在shell中添加<code>source /etc/profile</code>，或者直接加入java的环境变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/lib/jvm/jdk1.8.0_65</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JAVA_HOME</span>/jre/bin:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">export</span> CLASSPATH=<span class="variable">$CLASSPATH</span>:.:<span class="variable">$JAVA_HOME</span>/lib:<span class="variable">$JAVA_HOME</span>/jre/lib</span><br></pre></td></tr></table></figure></p>
-<p><strong>最后安利一下awk，实在是文本分析利器，使用场景很适合用来做日志文件分析处理</strong></p>
-
-          
+          <h3 id="Linux与Windows-“Enter”键的区别"><a href="#Linux与Windows-“Enter”键的区别" class="headerlink" title="Linux与Windows “Enter”键的区别"></a>Linux与Windows “Enter”键的区别</h3><p>使用过Windows的人都知道”Enter”键的含义：换行，然而在Windows操作系统中这实际代表两个操作：回车和换行。<br>回车 \r 本义是光标重新回到本行开头，r的英文为return，控制字符可以写成CR，即Carriage Return<br>换行 \n 本义是光标往下一行（不一定到下一行行首），n的英文为newline，控制字符可以写成LF，即Line Feed<br>按下”Enter”键实际执行了这两个动作。<br>而在Linux系统中按下”Enter”键，也执行同样这两个动作，但是只需要换行 \n 字符即可表现为光标到下一行并回到行首。<br>于是在Windows与Linux的文本文件交互中可以发现两个现象：<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/05/14/编写Shell遇到的小坑/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
